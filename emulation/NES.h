@@ -1,4 +1,5 @@
 #include "../tools.h"
+#include <iostream>
 
 #ifndef DISASM_ONLY
 //include all headers not needed for disassemlby
@@ -17,30 +18,13 @@ struct Header{
     FlagByte f10;//unused
     //followed by 5 bytes of 0s
     
-    Header(istream istr){
-        istr.read((char*)this, 11);
-        istr.ignore(5);
-    }
+    Header(std::istream istr);
     
-    inline long getPrgROMSize(){
-        return prgROMSize << 14;
-    }
-    
-    inline long getChrROMSize(){
-        return prgROMSize << 13;
-    }
-    
-    inline long getPrgRAMSize(){
-        return prgRAMSize << 13;
-    }
-    
-    inline bool isTrainer(){
-        return f6.b2();   
-    }
-    
-    inline bool isPCROM(){
-        return f7.b1();
-    }
+    inline long getPrgROMSize() const;
+    inline long getChrROMSize() const;
+    inline long getPrgRAMSize() const;
+    inline bool isTrainer() const;
+    inline bool isPCROM() const;
 } __attribute__ ((pack));
 
 class Cartridge{
@@ -50,23 +34,11 @@ class Cartridge{
     byte* chrROM;//character ROM
     byte* pcROM;//players choice ROM (if existent, 16 bytes)
     
-    void fill(){//fill the Cartridge info based on Header info
-        trainer = ne byte[head.];
-        prgROM = new byte[head.getPrgROMSize()];
-        chrROM = new byte[head.getChrROMSize()];
-        if(head.isPCROM())pcROM = new byte[16];
-    }
+    void fill();
     
 public:
-    Cartridge(istream istr){//create a cartridge from a given byte stream
-        head = new Header(istr);
-        fill();
-    }
-    
-    Cartridge(Header* header){//create a cartride from a given header
-        this.head = header;//save a pointer to the required header for future ref
-        fill();
-    }
+    Cartridge(std::istream istr);//create a cartridge from a given byte stream
+    Cartridge(Header* header);//create a cartride from a given header
     
     RAM* ram;
 }

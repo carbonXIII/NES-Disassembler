@@ -9,7 +9,7 @@ struct Bit{
     bool operator () () const {
         return !!(data & mask);
     }
-}
+};
 
 union FlagByte{
     byte data;
