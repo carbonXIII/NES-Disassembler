@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Header::Header(istream istr){
+Header::Header(istream& istr){
     istr.read((char*)this, 11);
     istr.ignore(5);
 }
@@ -40,7 +40,7 @@ void Cartridge::fill(){//fill the Cartridge info based on Header info
     if(head->isPCROM())pcROM = new byte[16];
 }
 
-Cartridge::Cartridge(istream istr){//create a cartridge from a given byte stream
+Cartridge::Cartridge(istream& istr){//create a cartridge from a given byte stream
 	head = new Header(istr);
 	fill();
 }

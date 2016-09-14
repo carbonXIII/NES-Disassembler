@@ -22,4 +22,4 @@ union FlagByte{
     Bit<5> b5;
     Bit<6> b6;
     Bit<7> b7;
-}
+};
