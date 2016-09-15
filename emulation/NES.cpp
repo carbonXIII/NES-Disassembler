@@ -5,6 +5,7 @@
  *      Author: jordanrich
  */
 #include "NES.h"
+#include <stdexcept>
 
 using namespace std;
 
@@ -38,6 +39,10 @@ void Cartridge::fill(){//fill the Cartridge info based on Header info
     prgROM = new byte[head->getPrgROMSize()];
     chrROM = new byte[head->getChrROMSize()];
     if(head->isPCROM())pcROM = new byte[16];
+}
+
+byte& Cartridge::get(word addr, mode m){
+
 }
 
 Cartridge::Cartridge(istream& istr){//create a cartridge from a given byte stream

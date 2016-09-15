@@ -1,4 +1,8 @@
+#ifndef TOOLS_H_
+#define TOOLS_H_
+
 typedef unsigned char byte;
+typedef unsigned short word;
 
 template <int bitno, typename T = byte>
 struct Bit{
@@ -23,3 +27,5 @@ union FlagByte{
     Bit<6> b6;
     Bit<7> b7;
 };
+
+#endif

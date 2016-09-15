@@ -1,4 +1,9 @@
+#ifndef EMULATION_NES_H_
+#define EMULATION_NES_H_
+
 #include "../tools.h"
+#include "memory.h"
+
 #include <iostream>
 
 #ifndef DISASM_ONLY
@@ -27,24 +32,36 @@ struct Header{
     inline bool isPCROM() const;
 } __attribute__ ((packed));
 
-class Cartridge{
+class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
     Header* head;
-    byte* trainer;//if existent, 512 bytes
+    byte* trainer;//if existent, 512 bytes copied to $7000 when the program begins
     byte* prgROM;//program ROM (contains the code and data sections of the program)
-    byte* chrROM;//character ROM
-    byte* pcROM;//players choice ROM (if existent, 16 bytes)
+    byte* chrROM;//character ROM connected to the PPU
+    byte* pcROM;//players choice ROM (if existent, 16 bytes); not normally accessable
     
     void fill();
-    
+
+    byte& getCPU(word addr);
+    byte& getPPU(word addr);
+    byte& getPC(word addr);
 public:
     Cartridge(std::istream& istr);//create a cartridge from a given byte stream
     Cartridge(Header* header);//create a cartride from a given header
     
+    static const word CPU_MIN_ADDRESS = 0x4020;
+    static const word PPU_MIN_ADDRESS = 0;
+    static const word PPU_MAX_ADDRESS = 0x4000;
+
+
+    byte& get(word addr, mode m);
+
     RAM* ram;
 };
 
 //the representation of the hardware of the NES (cartridge, processor, etc)
 class NES{
-    Cartridge cart;
-  
+    Cartridge cart;//the cartridge containing the ROM and additonal RAM for the system
+    //Processor proc;//the disassembler or the CPU [TODO]
 };
+
+#endif

@@ -1,3 +1,5 @@
+#define DISASM_ONLY
+
 #include <iostream>
 
 using namespace std;
