@@ -13,12 +13,18 @@
 template<typename address, typename number>
 class Addressable {
 public:
-	enum mode {CPU, PPU, PC};
+	enum {CPU, PPU, PC};
 
 	Addressable() {};
 	virtual ~Addressable() = 0;
 
-	number& get(address addr, mode m=CPU) = 0;//return xvalue ref to memory at address
+	number& get(address addr, int mode=CPU) = 0;//return xvalue ref to memory at address
+	
+	address getMinAdress(int mode=CPU) = 0;//returns the minimum valid address value for the given mode
+	address getMaxAddress(int mode=PPU) = 0;//max valid address
+	bool addressOutOfBounds(address addr, int mode=CPU){//checks if the given address is out of bounds (in the given mode)
+		return getMinAddress(m) > addr || addr > getMaxAddress(m);
+	}
 };
 
 #endif /* EMULATION_ADDRESSABLE_H_ */

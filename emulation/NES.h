@@ -39,8 +39,10 @@ class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
     byte* chrROM;//character ROM connected to the PPU
     byte* pcROM;//players choice ROM (if existent, 16 bytes); not normally accessable
     
+    bool usingTrainer = false;
+    
     void fill();
-
+    
     byte& getCPU(word addr);
     byte& getPPU(word addr);
     byte& getPC(word addr);
@@ -48,12 +50,11 @@ public:
     Cartridge(std::istream& istr);//create a cartridge from a given byte stream
     Cartridge(Header* header);//create a cartride from a given header
     
-    static const word CPU_MIN_ADDRESS = 0x4020;
-    static const word PPU_MIN_ADDRESS = 0;
-    static const word PPU_MAX_ADDRESS = 0x4000;
-
+    word getMinAddress(int mode=CPU);
+    word getMaxAddress(int mode=CPU);
 
     byte& get(word addr, mode m);
+    void useTrainer(bool b);
 
     RAM* ram;
 };
