@@ -34,11 +34,23 @@ inline bool Header::isPCROM() const{
 	return f7.b1();
 }
 
-void Cartridge::fill(){//fill the Cartridge info based on Header info
-    trainer = new byte[head->isTrainer()];
+void Cartridge::fill(istream& istr){//fill the Cartridge info based on Header info
+    if(head->isTrainer()){
+		trainer = new byte[512];
+		istr.read((char*)trainer, 512);
+	}
+	
     prgROM = new byte[head->getPrgROMSize()];
-    chrROM = new byte[head->getChrROMSize()];
-    if(head->isPCROM())pcROM = new byte[16];
+	istr.read((char*)prgROM, head->getPrgROMSize());
+    
+	chrROM = new byte[head->getChrROMSize()];
+	istr.read((char*)chrROM, head->getChrROMSize());
+    
+	if(head->isPCROM()){
+		pcROM = new byte[16];
+		istr.read((char*)pcROM, 8);
+		if(!istr.eof())istr.read((char*)pcROM, 8);
+	}
 }
 
 void Cartridge::useTrainer(bool b){
@@ -91,3 +103,11 @@ Cartridge::Cartridge(Header* header){//create a cartride from a given header
 	fill();
 }
 
+Catridge* NES::getCartridge(){
+	return &cart;
+}
+
+NES::NES(istream& istr, Processor* proc){
+	cart = new Cartridge(istr);//read the header from the stream
+	this.proc = proc;
+}

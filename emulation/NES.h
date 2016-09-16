@@ -2,7 +2,8 @@
 #define EMULATION_NES_H_
 
 #include "../tools.h"
-#include "memory.h"
+#include "Addressable.h"
+#include "Processor.h"
 
 #include <iostream>
 
@@ -41,7 +42,7 @@ class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
     
     bool usingTrainer = false;
     
-    void fill();
+    void fill(std::istream& istr);
     
     byte& getCPU(word addr);
     byte& getPPU(word addr);
@@ -62,7 +63,12 @@ public:
 //the representation of the hardware of the NES (cartridge, processor, etc)
 class NES{
     Cartridge cart;//the cartridge containing the ROM and additonal RAM for the system
-    //Processor proc;//the disassembler or the CPU [TODO]
+    Processor* proc;//the disassembler or the CPU [TODO]s
+    
+public:
+    Cartridge* getCartridge();
+    
+    NES(std::istream& istr);
 };
 
 #endif
