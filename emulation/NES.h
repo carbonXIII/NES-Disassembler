@@ -49,12 +49,13 @@ class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
     byte& getPC(word addr);
 public:
     Cartridge(std::istream& istr);//create a cartridge from a given byte stream
-    Cartridge(Header* header);//create a cartride from a given header
+    Cartridge(std::istream& istr, Header* header);//create a cartride from a given header
+    ~Cartridge();
     
     word getMinAddress(int mode=CPU);
     word getMaxAddress(int mode=CPU);
 
-    byte& get(word addr, mode m);
+    byte& get(word addr, int mode);
     void useTrainer(bool b);
 
     RAM* ram;
@@ -68,7 +69,7 @@ class NES{
 public:
     Cartridge* getCartridge();
     
-    NES(std::istream& istr);
+    NES(std::istream& istr, Processor* proc);
 };
 
 #endif

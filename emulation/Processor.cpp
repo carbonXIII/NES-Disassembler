@@ -2,5 +2,5 @@
 
 Processor::Processor(word initPC, word maxPC){
     PC = initPC;
-    this.maxPC = maxPC;
+    this->maxPC = maxPC;
 }

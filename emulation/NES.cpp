@@ -58,21 +58,21 @@ void Cartridge::useTrainer(bool b){
 }
 
 word Cartridge::getMinAddress(int mode){
-	if(mode == Addressable.CPU){
-		return 0x8000;	
+	if(mode == 0){//CPU
+		return 0x8000;
 	}return 0;//PPU or PC
 }
 
-word Catridge::getMaxAddress(int mode){
-	if(mode == Addressable.CPU){
-		return getMinAddress(Addressable.CPU) + head->getPrgROMSize() - 1;
-	}if(mode == Addresable.PPU){
+word Cartridge::getMaxAddress(int mode){
+	if(mode == 0){//CPU
+		return getMinAddress(0) + head->getPrgROMSize() - 1;
+	}if(mode == 1){//PPU
 		return head->getChrROMSize() - 1;
 	}return (head->isPCROM()) ? 15 : 0;//PC
 }
 
 byte& Cartridge::getCPU(word addr){
-	return prgROM[addr - getMinAddress(Addressable.CPU)];
+	return prgROM[addr - getMinAddress(0)];
 }
 
 byte& Cartridge::getPPU(word addr){
@@ -84,30 +84,36 @@ byte& Cartridge::getPC(word addr){
 }
 
 byte& Cartridge::get(word addr, int mode){
-	if(getAddressOutOfBounds(addr, mode)) throw out_of_range("The address is out of range of the device.");
+	if(addressOutOfBounds(addr, mode)) throw out_of_range("The address is out of range of the device.");
 	
-	if(m == Addressable.CPU){
+	if(mode == 0){
 		return getCPU(addr);
-	}if(m == Addressable.PPU){
+	}if(mode == 1){
 		return getPPU(addr);
 	}return getPC(addr);
 }
 
 Cartridge::Cartridge(istream& istr){//create a cartridge from a given byte stream
 	head = new Header(istr);
-	fill();
+	fill(istr);
 }
 
-Cartridge::Cartridge(Header* header){//create a cartride from a given header
+Cartridge::Cartridge(istream& istr, Header* header){//create a cartridge from a given header
 	this->head = header;//save a pointer to the required header for future ref
-	fill();
+	fill(istr);
 }
 
-Catridge* NES::getCartridge(){
+Cartridge::~Cartridge(){
+	delete [] trainer;
+	delete [] prgROM;
+	delete [] chrROM;
+	delete [] pcROM;
+}
+
+Cartridge* NES::getCartridge(){
 	return &cart;
 }
 
-NES::NES(istream& istr, Processor* proc){
-	cart = new Cartridge(istr);//read the header from the stream
-	this.proc = proc;
+NES::NES(istream& istr, Processor* proc) : cart(istr){
+	this->proc = proc;
 }

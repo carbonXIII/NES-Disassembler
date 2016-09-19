@@ -1,6 +1,10 @@
 #ifndef EMULATION_PROCESSOR_H_
 #define EMULATION_PROCESSOR_H_
 
+#include "../tools.h"
+
+class NES;
+
 class Processor{
 protected:
     NES* parent;//the NES to execute within
@@ -10,7 +14,7 @@ protected:
 public:
     Processor(word initPC, word maxPC);
     
-    void run() = 0;
-}
+    virtual void run() = 0;
+};
 
 #endif

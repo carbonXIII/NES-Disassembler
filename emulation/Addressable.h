@@ -16,14 +16,14 @@ public:
 	enum {CPU, PPU, PC};
 
 	Addressable() {};
-	virtual ~Addressable() = 0;
+	virtual ~Addressable() {};
 
-	number& get(address addr, int mode=CPU) = 0;//return xvalue ref to memory at address
+	virtual number& get(address addr, int mode=CPU) = 0;//return xvalue ref to memory at address
 	
-	address getMinAdress(int mode=CPU) = 0;//returns the minimum valid address value for the given mode
-	address getMaxAddress(int mode=PPU) = 0;//max valid address
+	virtual address getMinAddress(int mode=CPU) = 0;//returns the minimum valid address value for the given mode
+	virtual address getMaxAddress(int mode=PPU) = 0;//max valid address
 	bool addressOutOfBounds(address addr, int mode=CPU){//checks if the given address is out of bounds (in the given mode)
-		return getMinAddress(m) > addr || addr > getMaxAddress(m);
+		return getMinAddress(mode) > addr || addr > getMaxAddress(mode);
 	}
 };
 
