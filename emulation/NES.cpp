@@ -5,7 +5,6 @@
  *      Author: jordanrich
  */
 #include "NES.h"
-#include "Disassembler.h"
 #include <stdexcept>
 
 using namespace std;
@@ -114,12 +113,29 @@ Cartridge::~Cartridge(){
 }
 
 Cartridge* NES::getCartridge(){
-	return &cart;
+	return cart;
 }
 
-NES::NES(){
-	this->proc = new Disassembler();
+void NES::refillCartridge(){
+	delete cart;
+	cart = new Cartridge();
 }
+
+void NES::setCartridge(Cartridge* newCart){
+	delete cart;
+	cart = newCart;
+}
+
+Processor* NES::getProcessor(){
+	return proc;
+}
+
+void NES::setProcessor(Processor* newProc){
+	delete proc;
+	proc = newProc;
+}
+
+NES::NES() {};
 
 NES::NES(Processor* proc){
 	this->proc = proc;

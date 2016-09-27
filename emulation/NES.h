@@ -64,11 +64,17 @@ public:
 
 //the representation of the hardware of the NES (cartridge, processor, etc)
 class NES{
-    Cartridge cart;//the cartridge containing the ROM and additonal RAM for the system
+    Cartridge* cart;//the cartridge containing the ROM and additonal RAM for the system
     Processor* proc;//the disassembler or the CPU
     
 public:
     Cartridge* getCartridge();
+    void refillCartridge();
+    void setCartridge(Cartridge* newCart);
+
+    Processor* getProcessor();
+    void setProcessor(Processor* newProc);
+
     NES(Processor* proc);
     NES();
 };

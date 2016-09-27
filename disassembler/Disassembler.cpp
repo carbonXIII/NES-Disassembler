@@ -4,6 +4,10 @@ Disassembler::Disassembler() : Processor(parent->getCartridge()->getMinAddress()
 
 Disassembler::Disassembler(word maxPC) : Processor(parent->getCartridge()->getMinAddress(), maxPC) {}
 
+Disassembler::~Disassembler(){
+	//graceful shutdown and cleanup of data
+}
+
 void Disassembler::run(){
     //[TODO]: Add disassembly code
 }

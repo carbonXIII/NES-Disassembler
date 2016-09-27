@@ -12,7 +12,8 @@ protected:
     word PC;//program counter (all processors have a program counter)
     word maxPC;//the failsafe max PC address
 public:
-    Processor(word initPC, word maxPC);
+    Processor(word initPC, word maxPC);\
+    virtual ~Processor() {};
     
     virtual void run() = 0;
 };
