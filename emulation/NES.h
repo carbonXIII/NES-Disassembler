@@ -6,6 +6,7 @@
 #include "Processor.h"
 
 #include <iostream>
+#include <fstream>
 
 #ifndef DISASM_ONLY
 //include all headers not needed for disassembly
@@ -24,7 +25,7 @@ struct Header{
     FlagByte f10;//unused
     //followed by 5 bytes of 0s
     
-    Header(std::istream& istr);
+    Header();
     
     inline long getPrgROMSize() const;
     inline long getChrROMSize() const;
@@ -42,14 +43,14 @@ class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
     
     bool usingTrainer = false;
     
-    void fill(std::istream& istr);
+    void fill();
     
     byte& getCPU(word addr);
     byte& getPPU(word addr);
     byte& getPC(word addr);
 public:
-    Cartridge(std::istream& istr);//create a cartridge from a given byte stream
-    Cartridge(std::istream& istr, Header* header);//create a cartride from a given header
+    Cartridge();//create a cartridge from a given byte stream
+    Cartridge(Header* header);//create a cartride from a given header
     ~Cartridge();
     
     word getMinAddress(int mode=CPU);
@@ -64,12 +65,12 @@ public:
 //the representation of the hardware of the NES (cartridge, processor, etc)
 class NES{
     Cartridge cart;//the cartridge containing the ROM and additonal RAM for the system
-    Processor* proc;//the disassembler or the CPU [TODO]s
+    Processor* proc;//the disassembler or the CPU
     
 public:
     Cartridge* getCartridge();
-    
-    NES(std::istream& istr, Processor* proc);
+    NES(Processor* proc);
+    NES();
 };
 
 #endif

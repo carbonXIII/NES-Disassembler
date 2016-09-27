@@ -1,14 +1,13 @@
 #define DISASM_ONLY
 
-#include <iostream>
 #include "emulation/NES.h"
 #include "emulation/Disassembler.h"
+#include <iostream>
 
 using namespace std;
 
 int main(){
-    Disassembler* disas = new Disassembler();
-    NES nes(cin, disas);
+    NES nes();
     
     return 0;
 }

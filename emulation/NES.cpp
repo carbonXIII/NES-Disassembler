@@ -5,11 +5,14 @@
  *      Author: jordanrich
  */
 #include "NES.h"
+#include "Disassembler.h"
 #include <stdexcept>
 
 using namespace std;
 
-Header::Header(istream& istr){
+istream& istr = cin;
+
+Header::Header(){
     istr.read((char*)this, 11);
     istr.ignore(5);
 }
@@ -34,7 +37,7 @@ inline bool Header::isPCROM() const{
 	return f7.b1();
 }
 
-void Cartridge::fill(istream& istr){//fill the Cartridge info based on Header info
+void Cartridge::fill(){//fill the Cartridge info based on Header info
     if(head->isTrainer()){
 		trainer = new byte[512];
 		istr.read((char*)trainer, 512);
@@ -93,14 +96,14 @@ byte& Cartridge::get(word addr, int mode){
 	}return getPC(addr);
 }
 
-Cartridge::Cartridge(istream& istr){//create a cartridge from a given byte stream
-	head = new Header(istr);
-	fill(istr);
+Cartridge::Cartridge(){//create a cartridge from a given byte stream
+	head = new Header();
+	fill();
 }
 
-Cartridge::Cartridge(istream& istr, Header* header){//create a cartridge from a given header
+Cartridge::Cartridge(Header* header){//create a cartridge from a given header
 	this->head = header;//save a pointer to the required header for future ref
-	fill(istr);
+	fill();
 }
 
 Cartridge::~Cartridge(){
@@ -114,6 +117,10 @@ Cartridge* NES::getCartridge(){
 	return &cart;
 }
 
-NES::NES(istream& istr, Processor* proc) : cart(istr){
+NES::NES(){
+	this->proc = new Disassembler();
+}
+
+NES::NES(Processor* proc){
 	this->proc = proc;
 }
