@@ -17,7 +17,7 @@ string Disassembler::processOP(){
 
 void Disassembler::run(){
     while(PC < maxPC){
-		cout << processOP(); << endl;
+		cout << processOP() << endl;
 	}
 	
 	cout << "End of segment" << endl;

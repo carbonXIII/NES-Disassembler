@@ -2,12 +2,14 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <map>
 #include <cstdlib>
+#include <cstring>
 
 using namespace std;
 
-using unsigned char* byte;
+typedef unsigned char byte;
 
 string outputPath = "";
 ofstream output;
@@ -50,7 +52,7 @@ void dumpTable(ostream& out){//dump the lookup table followed by the used portio
 }
 
 void printAddressOptions(){
-    for(std::map<string, int>::iterator it = addressNames.begin(); it != addressNames.end(), it++){
+    for(std::map<string, int>::iterator it = addressNames.begin(); it != addressNames.end(); it++){
         cout << "\t" << it->second << ": " << it->first << endl;
     }
 }
@@ -77,25 +79,27 @@ void errCSV(){
     exit(1);
 }
 
-int hexToInt(char a){
-    osstream ss;
+int hexToInt(char* a){
+    ostringstream ss;
+
     int rtn;
-    ss >> std::hex >> rtn;
-    if(cin.fail()){
-        cin.clear();
-        cin.ignore();
-        errCSV();
+    ss << std::hex << a;
+    ss >> rtn;
+
+    if(ss.fail()){
+    	errCSV();
     }
+
     return rtn;
 }
 
 bool processLine(string* line){
     char* str;
-    strcpy(line->c_str(),str);
+    strcpy(str, line->data());
     
     char* code = strtok(str,",");
     if(code[2] != ' ' || code[2] != '\0')errCSV();
-    lookup[hexToInt()] = bI;//add the location of the op code info to the lookup table
+    lookup[hexToInt(code)] = bI;//add the location of the op code info to the lookup table
     
     char* name = strtok(0,",");
     for(int i = 0; i < 3; i++){
@@ -145,7 +149,7 @@ int main(int argc, char** argv){
     }
     
     bool print = false;
-    if(output == ""){
+    if(outputPath == ""){
         cout << "Print the table to the console? ";
         cin >> print;
         if(print){
