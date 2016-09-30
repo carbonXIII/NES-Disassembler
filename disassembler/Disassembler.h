@@ -10,6 +10,8 @@ public:
     
     ~Disassembler();
 
+    std::string processOP();//processes the next OP and increments the PC to the beginning of the following OP
+    
     void run();
 };
 

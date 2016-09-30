@@ -15,7 +15,7 @@ public:
     Processor(word initPC, word maxPC);\
     virtual ~Processor() {};
     
-    virtual void run() = 0;
+    virtual void run() = 0;//update loop; might be run on a seperate thread (depending on implementation)
 };
 
 #endif
