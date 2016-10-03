@@ -1,0 +1,151 @@
+69,ADC,Immediate
+65,ADC,Zero Page
+75,ADC,"Zero Page, X"
+6D,ADC,Absolute
+7D,ADC,"Absolute, X"
+79,ADC,"Absolute, Y"
+61,ADC,"(Indirect, X)"
+71,ADC,"(Indirect), Y"
+29,AND,Immediate
+25,AND,Zero Page
+35,AND,"Zero Page, X"
+2D,AND,Absolute
+3D,AND,"Absolute, X"
+39,AND,"Absolute, Y"
+21,AND,"(Indirect, X)"
+31,AND,"(Indirect), Y"
+0A,ASL,Accumulator
+06,ASL,Zero Page
+16,ASL,"Zero Page, X"
+0E,ASL,Absolute
+1E,ASL,"Absolute, X"
+90,BCC,Relative
+B0,BCS,Relative
+F0,BEQ,Relative
+24,BIT,Zero Page
+2C,BIT,Absolute
+30,BMI,Relative
+D0,BNE,Relative
+10,BPL,Relative
+0,BRK,
+50,BVC,Relative
+70,BVS,Relative
+18,CLC,
+D8,CLD,
+58,CLI,
+B8,CLV,
+C9,CMP,Immediate
+C5,CMP,Zero Page
+D5,CMP,"Zero Page, X"
+CD,CMP,Absolute
+DD,CMP,"Absolute, X"
+D9,CMP,"Absolute, Y"
+C1,CMP,"(Indirect, X)"
+D1,CMP,"(Indirect), Y"
+E0,CPX,Immediate
+E4,CPX,Zero Page
+EC,CPX,Absolute
+C0,CPY,Immediate
+C4,CPY,Zero Page
+CC,CPY,Absolute
+C6,DEC,Zero Page
+D6,DEC,"Zero Page, X"
+CE,DEC,Absolute
+DE,DEC,"Absolute, X"
+CA,DEX,
+88,DEY,
+49,EOR,Immediate
+45,EOR,Zero Page
+55,EOR,"Zero Page, X"
+4D,EOR,Absolute
+5D,EOR,"Absolute, X"
+59,EOR,"Absolute, Y"
+41,EOR,"(Indirect, X)"
+51,EOR,"(Indirect), Y"
+E6,INC,Zero Page
+F6,INC,"Zero Page, X"
+EE,INC,Absolute
+FE,INC,"Absolute, X"
+E8,INX,
+C8,INY,
+6C,JMP,Indirect
+4C,JMP,Absolute
+20,JSR,
+A9,LDA,Immediate
+A5,LDA,Zero Page
+B5,LDA,"Zero Page, X"
+AD,LDA,Absolute
+BD,LDA,"Absolute, X"
+B9,LDA,"Absolute, Y"
+A1,LDA,"(Indirect, X)"
+B1,LDA,"(Indirect), Y"
+A6,LDX,Zero Page
+B6,LDX,"Zero Page, Y"
+AE,LDX,Absolute
+BE,LDX,"Absolute, Y"
+A2,LDX,Immediate
+A0,LDY,Immediate
+A4,LDY,Zero Page
+B4,LDY,"Zero Page, X"
+AC,LDY,Absolute
+BC,LDY,"Absolute, X"
+4A,LSR,Accumulator
+46,LSR,Zero Page
+56,LSR,"Zero Page, X"
+4E,LSR,Absolute
+5E,LSR,"Absolute, X"
+EA,NOP,
+09,ORA,Immediate
+05,ORA,Zero Page
+15,ORA,"Zero Page, X"
+0D,ORA,Absolute
+1D,ORA,"Absolute, X"
+19,ORA,"Absolute, Y"
+01,ORA,"(Indirect, X)"
+11,ORA,"(Indirect), Y"
+48,PHA,
+08,PHP,
+68,PLA,
+28,PLP,
+2A,ROL,Accumulator
+26,ROL,Zero Page
+36,ROL,"Zero Page, X"
+2E,ROL,Absolute
+3E,ROL,"Absolute, X"
+6A,ROR,Accumulator
+66,ROR,Zero Page
+76,ROR,"Zero Page, X"
+6E,ROR,Absolute
+7E,ROR,"Absolute, X"
+40,RTI,
+60,RTS,
+E9,SBC,Immediate
+E5,SBC,Zero Page
+F5,SBC,"Zero Page, X"
+ED,SBC,Absolute
+FD,SBC,"Absolute, X"
+F9,SBC,"Absolute, Y"
+E1,SBC,"(Indirect, X)"
+F1,SBC,"(Indirect), Y"
+38,SEC,
+F8,SED,
+78,SEI,
+85,STA,Zero Page
+95,STA,"Zero Page, X"
+8D,STA,Absolute
+9D,STA,"Absolute, X"
+99,STA,"Absolute, Y"
+81,STA,"(Indirect, X)"
+91,STA,"(Indirect), Y"
+86,STX,Zero Page
+96,STX,"Zero Page, Y"
+8E,STX,Absolute
+84,STY,Zero Page
+94,STY,"Zero Page, X"
+8C,STY,Absolute
+AA,TAX,
+A8,TAY,
+BA,TSX,
+8A,TXA,
+9A,TXS,
+98,TYA,

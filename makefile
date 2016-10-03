@@ -17,6 +17,9 @@ $(OBJ_DIR)/%.o: %.cpp includes
 	    
 disasm: $(OBJECTS)
 	g++ $(OBJECTS) -o $(EXECUTABLE)
+	
+compressor/main: compressor/main.cpp
+	g++ $(CXXFLAGS) compressor/main.cpp -o compressor/main
 
 .PHONY: clean
 clean:

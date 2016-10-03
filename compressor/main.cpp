@@ -52,7 +52,7 @@ void dumpTable(ostream& out){//dump the lookup table followed by the used portio
 }
 
 void printAddressOptions(){
-    for(std::map<string, int>::iterator it = addressNames.begin(); it != addressNames.end(); it++){
+    for(auto it = addressNames.begin(); it != addressNames.end(); it++){
         cout << "\t" << it->second << ": " << it->first << endl;
     }
 }
@@ -75,12 +75,12 @@ bool processArgs(int argc, char** argv){//returns true on failure
 }
 
 void errCSV(){
-    cout << "note: note: the csv file must be in the order: \"code, name, address\"" << endl;
+    cout << "The csv file must be in the order: \"code (2 hex digits), name, address\"!" << endl;
     exit(1);
 }
 
 int hexToInt(char* a){
-    ostringstream ss;
+    stringstream ss;
 
     int rtn;
     ss << std::hex << a;
@@ -94,49 +94,54 @@ int hexToInt(char* a){
 }
 
 bool processLine(string* line){
-    char* str;
+    cout << "Processing line \'" << (*line) << "\'" << endl;
+    
+    char* str = new char[line->size()];
     strcpy(str, line->data());
     
     char* code = strtok(str,",");
-    if(code[2] != ' ' || code[2] != '\0')errCSV();
+    if(code[2] != ' ' && code[2] != '\0')errCSV();
     lookup[hexToInt(code)] = bI;//add the location of the op code info to the lookup table
     
     char* name = strtok(0,",");
     for(int i = 0; i < 3; i++){
-        if(name[i] == ' ' || name == '\0')errCSV();
-        buffer[bI+i] = name[i]; 
+        if(name[i] == ' ' || name[i] == '\0')errCSV();
+        buffer[bI+i] = name[i];
     }
     
     char* addr = strtok(0,",");
-    if(addr[0] == '\"'){
-        addr[strlen(addr) - 1] = '\0';
+    if(addr[0] == '\"'){//remove quotes
+        if(addr[strlen(addr) - 1] != '\"')addr[strlen(addr)] = ',';
         addr++;
+    }while(addr[strlen(addr) - 1] == ' ' || addr[strlen(addr) - 1] == '\r' || addr[strlen(addr) - 1] == '\"'){//remove spaces and line feeds
+        addr[strlen(addr) - 1] = '\0';
     }
+    
     if(!addressNames.count(string(addr))){
         cout << "Unknown addressing mode for op code \'" << code << "\'. Input the correct addressing mode # from list:";
         printAddressOptions();
         int mode; cin >> mode;
         buffer[bI+3] = mode;
     }else{
-        buffer[bI+3] = addressNames[string(addr)];
+        buffer[bI+3] = addressNames.at(string(addr));
     }
        
     bI += 4;//increment to next available slot
 }
 
 int main(int argc, char** argv){
-    if(argc >= 2){//there are arguments
+    if(argc >= 1){//there are arguments
         if(processArgs(argc, argv))
             exit(1);
     }
     
     if(csvPath == ""){
-        cout << "Input the path to the csv file (note: the csv file must be in the order: \"code, name, address\"):" << endl;
+        cout << "Input the path to the csv file (note: the csv file must be in the order: \"code (2 hex digits), name, address\"):" << endl;
         cin >> csvPath;
     }
     
     try{
-        csvFile = ifstream(csvPath.c_str());
+        csvFile.open(csvPath.c_str());
     }catch (int e) {
         cout << "Failed to open file." << endl;
         return 0;
@@ -144,7 +149,7 @@ int main(int argc, char** argv){
     
     string ln;
     while(!csvFile.eof()){
-        getline(cin, ln);
+        getline(csvFile, ln);
         processLine(&ln);
     }
     
@@ -161,7 +166,7 @@ int main(int argc, char** argv){
     }
     
     try{
-        output = ofstream(outputPath.c_str(), ios::binary);
+        output.open(outputPath.c_str(), ios::binary);
     }catch(int e){
         cout << "Failed to create output file." << endl;
         return 0;
