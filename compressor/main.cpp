@@ -18,7 +18,7 @@ string csvPath = "";
 ifstream csvFile;
 long csvFileSize = 0;
 
-enum : char {accu, imme, impl, rela, abso, zero, aIndX, aIndY, zIndX, zIndY, indXI, indYI, iIndX, iIndY};//accumulator,immediate,implied,relative,absolute,zero-page,indirect,absolute-indexed,zero-indexed,indexed-indirect,indirect-indexed (respectively with x and y variants of indexed ops)
+enum : char {accu, imme, impl, rela, abso, zero, indi, aIndX, aIndY, zIndX, zIndY, indXI, indYI, iIndX, iIndY};//accumulator,immediate,implied,relative,absolute,zero-page,indirect,absolute-indexed,zero-indexed,indexed-indirect,indirect-indexed (respectively with x and y variants of indexed ops)
 const std::map<string, int> addressNames = {
     {string("Accumulator"),accu},
     {string("Immediate"),imme},
@@ -26,6 +26,7 @@ const std::map<string, int> addressNames = {
     {string("Relative"),rela},
     {string("Absolute"),abso},
     {string("Zero Page"),zero},
+	{string("Indirect"),indi},
     {string("Absolute, X"),aIndX},
     {string("Absolute, Y"),aIndY},
     {string("Zero Page, X"),zIndX},
@@ -42,7 +43,7 @@ int bI = 0;
 
 void printUsage(){
     cout << "USAGE: compressor [-f output] [csvpath]" << endl;
-    cout << "\t-f     : Specify the file path of the compressed output file" << endl;
+    cout << "\t-o     : Specify the file path of the compressed output file" << endl;
     cout << "\tcsvpath: The file path of the input csv file" << endl;
 }
 
@@ -59,8 +60,8 @@ void printAddressOptions(){
 
 bool processArgs(int argc, char** argv){//returns true on failure
     for(int i = 1; i < argc; i++){
-        if(argv[i] == "-f"){
-            if(argc > ++i){
+    	if(strcmp(argv[i],"-o") == 0){
+    		if(argc > ++i){
                 outputPath = string(argv[i]);
             }else{
                 printUsage();
@@ -110,15 +111,18 @@ bool processLine(string* line){
     }
     
     char* addr = strtok(0,",");
-    if(addr[0] == '\"'){//remove quotes
+    if(addr == nullptr){//replace a nullptr from strtok with an empty string
+    	addr = new char[1];
+    	addr[0] = '\0';
+    }if(addr[0] == '\"'){//remove quotes
         if(addr[strlen(addr) - 1] != '\"')addr[strlen(addr)] = ',';
         addr++;
     }while(addr[strlen(addr) - 1] == ' ' || addr[strlen(addr) - 1] == '\r' || addr[strlen(addr) - 1] == '\"'){//remove spaces and line feeds
         addr[strlen(addr) - 1] = '\0';
     }
-    
+
     if(!addressNames.count(string(addr))){
-        cout << "Unknown addressing mode for op code \'" << code << "\'. Input the correct addressing mode # from list:";
+        cout << "Unknown addressing mode for op code \'" << code << "\'. Input the correct addressing mode # from list:" << endl;
         printAddressOptions();
         int mode; cin >> mode;
         buffer[bI+3] = mode;
@@ -149,8 +153,9 @@ int main(int argc, char** argv){
     
     string ln;
     while(!csvFile.eof()){
-        getline(csvFile, ln);
-        processLine(&ln);
+    	getline(csvFile, ln);
+    	if(ln == "")break;
+    	processLine(&ln);
     }
     
     bool print = false;

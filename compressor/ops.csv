@@ -27,7 +27,7 @@ F0,BEQ,Relative
 30,BMI,Relative
 D0,BNE,Relative
 10,BPL,Relative
-0,BRK,
+00,BRK,
 50,BVC,Relative
 70,BVS,Relative
 18,CLC,
