@@ -37,7 +37,7 @@ const std::map<string, int> addressNames = {
     {string("(Indirect), Y"),iIndY}
 };
 
-byte lookup[256] = {0};//the lookup table for the ordering of the opcodes (also to be written to the file)
+byte lookup[256];//the lookup table for the ordering of the opcodes (also to be written to the file)
 byte buffer[1024];//the used 4 byte sections will be written to the file
 int bI = 0;
 
@@ -95,6 +95,7 @@ int hexToInt(char* a){
 }
 
 bool processLine(string* line){
+	fill(lookup,lookup+256,0xFF);
     cout << "Processing line \'" << (*line) << "\'" << endl;
     
     char* str = new char[line->size()];

@@ -4,6 +4,12 @@
 typedef unsigned char byte;
 typedef unsigned short word;
 
+const char* OP_FILE = "disassembler/ops.bin";
+
+const char* HEX = "0123456789ABCDEF";
+const byte NIBBLE_MASK = 0xF;
+const byte BYTE_MASK = 0xFF;
+
 template <int bitno, typename T = byte>
 struct Bit{
     byte data;
@@ -27,5 +33,17 @@ union FlagByte{
     Bit<6> b6;
     Bit<7> b7;
 };
+
+inline void addHex(byte c, string& s){
+    s += HEX[c >> 4];
+    s += HEX[c & NIBBLE_MASK];
+}
+
+inline void addHex(word c, string& s){
+    s += HEX[c >> 12];
+    s += HEX[(c >> 8) & NIBBLE_MASK];
+    s += HEX[(c & BYTE_MASK) >> 4];
+    s += HEX[c & NIBBLE_MASK];
+}
 
 #endif

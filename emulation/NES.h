@@ -56,7 +56,7 @@ public:
     word getMinAddress(int mode=CPU);
     word getMaxAddress(int mode=CPU);
 
-    byte& get(word addr, int mode);
+    byte& get(word addr, int mode=CPU);
     void useTrainer(bool b);
 
     RAM* ram;
