@@ -9,13 +9,6 @@
 
 using namespace std;
 
-istream& istr = cin;
-
-Header::Header(){
-    istr.read((char*)this, 11);
-    istr.ignore(5);
-}
-
 inline long Header::getPrgROMSize() const{
 	return prgROMSize << 14;
 }
@@ -39,19 +32,19 @@ inline bool Header::isPCROM() const{
 void Cartridge::fill(){//fill the Cartridge info based on Header info
     if(head->isTrainer()){
 		trainer = new byte[512];
-		istr.read((char*)trainer, 512);
+		file.read((char*)trainer, 512);
 	}
 	
     prgROM = new byte[head->getPrgROMSize()];
-	istr.read((char*)prgROM, head->getPrgROMSize());
+	file.read((char*)prgROM, head->getPrgROMSize());
     
 	chrROM = new byte[head->getChrROMSize()];
-	istr.read((char*)chrROM, head->getChrROMSize());
+	file.read((char*)chrROM, head->getChrROMSize());
     
 	if(head->isPCROM()){
 		pcROM = new byte[16];
-		istr.read((char*)pcROM, 8);
-		if(!istr.eof())istr.read((char*)pcROM, 8);
+		file.read((char*)pcROM, 8);
+		if(!file.eof())file.read((char*)pcROM, 8);
 	}
 }
 
@@ -95,12 +88,19 @@ byte& Cartridge::get(word addr, int mode){
 	}return getPC(addr);
 }
 
-Cartridge::Cartridge(){//create a cartridge from a given byte stream
+Cartridge::Cartridge(string path){//create a cartridge from a given byte stream
+	file.open(path, ios::binary);
+
+	//create a new header and fill it
 	head = new Header();
+	file.read((char*)head,11);
+	file.ignore(5);
+
 	fill();
 }
 
-Cartridge::Cartridge(Header* header){//create a cartridge from a given header
+Cartridge::Cartridge(Header* header, string path){//create a cartridge from a given header
+	file.open(path, ios::binary);
 	this->head = header;//save a pointer to the required header for future ref
 	fill();
 }
@@ -116,12 +116,7 @@ Cartridge* NES::getCartridge(){
 	return cart;
 }
 
-void NES::refillCartridge(){
-	delete cart;
-	cart = new Cartridge();
-}
-
-void NES::setCartridge(Cartridge* newCart){
+void NES::attachCartridge(Cartridge* newCart){
 	delete cart;
 	cart = newCart;
 }
@@ -130,13 +125,14 @@ Processor* NES::getProcessor(){
 	return proc;
 }
 
-void NES::setProcessor(Processor* newProc){
+void NES::attachProcessor(Processor* newProc){
 	delete proc;
 	proc = newProc;
+	if(validProcessor())proc->setParent(this);
 }
 
-NES::NES() {};
-
-NES::NES(Processor* proc){
+NES::NES(Processor* proc, Cartridge* cart){
 	this->proc = proc;
+	if(validProcessor())proc->setParent(this);
+	this->cart = cart;
 }

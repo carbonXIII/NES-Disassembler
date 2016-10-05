@@ -1,23 +1,23 @@
 #ifndef TOOLS_H_
 #define TOOLS_H_
 
+#include <iostream>
+#include <fstream>
+
 typedef unsigned char byte;
 typedef unsigned short word;
 
-const char* OP_FILE = "disassembler/ops.bin";
-
-const char* HEX = "0123456789ABCDEF";
-const byte NIBBLE_MASK = 0xF;
-const byte BYTE_MASK = 0xFF;
+extern const char* OP_FILE;
+extern const char* HEX;
+extern const byte NIBBLE_MASK;
+extern const byte BYTE_MASK;
 
 template <int bitno, typename T = byte>
 struct Bit{
     byte data;
-    
     enum {mask = 1u << bitno};
-    
     bool operator () () const {
-        return !!(data & mask);
+    	return !!(data & mask);
     }
 };
 
@@ -34,12 +34,12 @@ union FlagByte{
     Bit<7> b7;
 };
 
-inline void addHex(byte c, string& s){
+inline void addHex(byte c, std::string& s){
     s += HEX[c >> 4];
     s += HEX[c & NIBBLE_MASK];
 }
 
-inline void addHex(word c, string& s){
+inline void addHex(word c, std::string& s){
     s += HEX[c >> 12];
     s += HEX[(c >> 8) & NIBBLE_MASK];
     s += HEX[(c & BYTE_MASK) >> 4];

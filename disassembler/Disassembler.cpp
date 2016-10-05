@@ -1,6 +1,5 @@
 #include "Disassembler.h"
-#include <iostream>
-#include <fstream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -13,12 +12,16 @@ Disassembler::~Disassembler(){
 }
 
 void Disassembler::fillInstructionTable(){
+	ifstream fin;
+	int size = 0;
+
 	try{
-		ifstream fin(OP_FILE, ios::ate | ios::binary);
-		int size = ios::tellg() + 1;
-		ios::seekg(ios::beg, 0);
+		fin.open(OP_FILE, ios::ate | ios::binary);
+		size = fin.tellg();
+		fin.seekg(0, ios::beg);
 	}catch(int& e){
 		cout << "Instruction set file not loaded! Ensure " << OP_FILE << " exists!" << endl;
+		exit(1);
 	}
 	
 	fin.read((char*)&instrSet, size);
@@ -97,11 +100,12 @@ string Disassembler::processOP(){
 	byte op = getByteNext();
 	byte location = instrSet.lookup[op];
 	
-	Instruction* instr = instrSet.instructions[location];
-	if(instr.getName()[0] == \0)return "";
+	Instruction* instr = &instrSet.instructions[location];
+	if(instr->getName()[0] == 0)return "";
 	
-	rtn += 
-	
+	rtn += instr->getName();
+	rtn += processOperands(instr->addressMode);
+
 	return rtn;
 }
 

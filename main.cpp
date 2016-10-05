@@ -1,15 +1,21 @@
 #define DISASM_ONLY
 
-#include "emulation/NES.h"
 #include "disassembler/Disassembler.h"
 #include <iostream>
 
 using namespace std;
 
 int main(){
-	Disassembler disasm = Disassembler();
+	string path;
+	cout << "Input the path to the ROM file to disassemble: ";
+	cin >> path;
 
-    NES nes = NES((Processor*)&disasm);
+	Disassembler disasm;
+	Cartridge cart(path);
+
+	NES nes = NES(&disasm, &cart);
+
+	disasm.run();
     
     return 0;
 }

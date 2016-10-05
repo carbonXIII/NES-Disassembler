@@ -12,16 +12,18 @@ protected:
     word PC;//program counter (all processors have a program counter)
     word maxPC;//the failsafe max PC address
     
-    byte getByte() {return parent->getCartridge()->get(PC);}//get a CPU byte and don't increment the PC
-    byte getByteNext(return parent->getCartridge()->get(PC++)}//get a CPU byte and increment the PC
+    byte getByte();//get a CPU byte and don't increment the PC
+    byte getByteNext();//get a CPU byte and increment the PC
     
-    word getWord() {return ((word)parent->getCartridge()->get(PC) << 8) & parent->getCartridge()->get(PC+1);}
-    word getWordNext() {return ((word)parent->getCartridge()->get(PC++) << 8) & parent->getCartridge()->get(PC++);}
-                     
+    word getWord();
+    word getWordNext();
 public:
     Processor(word initPC, word maxPC);
     virtual ~Processor() {};
     
+    void setParent(NES* parent);
+    bool validParent() const {return parent != nullptr;};
+
     virtual void run() = 0;//update loop; might be run on a seperate thread (depending on implementation)
 };
 

@@ -5,9 +5,6 @@
 #include "Addressable.h"
 #include "Processor.h"
 
-#include <iostream>
-#include <fstream>
-
 #ifndef DISASM_ONLY
 //include all headers not needed for disassembly
 #endif
@@ -24,9 +21,7 @@ struct Header{
     FlagByte f9;
     FlagByte f10;//unused
     //followed by 5 bytes of 0s
-    
-    Header();
-    
+
     inline long getPrgROMSize() const;
     inline long getChrROMSize() const;
     inline long getPrgRAMSize() const;
@@ -45,12 +40,14 @@ class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
     
     void fill();
     
+    std::ifstream file;
+
     byte& getCPU(word addr);
     byte& getPPU(word addr);
     byte& getPC(word addr);
 public:
-    Cartridge();//create a cartridge from a given byte stream
-    Cartridge(Header* header);//create a cartride from a given header
+    Cartridge(std::string path);//create a cartridge from the file stream
+    Cartridge(Header* header, std::string path);//create a cartride from a given header
     ~Cartridge();
     
     word getMinAddress(int mode=CPU);
@@ -69,14 +66,14 @@ class NES{
     
 public:
     Cartridge* getCartridge();
-    void refillCartridge();
-    void setCartridge(Cartridge* newCart);
+    void attachCartridge(Cartridge* newCart);
+    bool validCartridge() const {return cart != nullptr;}
 
     Processor* getProcessor();
-    void setProcessor(Processor* newProc);
+    void attachProcessor(Processor* newProc);
+    bool validProcessor() const {return proc != nullptr;};
 
-    NES(Processor* proc);
-    NES();
+    NES(Processor* proc=nullptr, Cartridge* cart=nullptr);
 };
 
 #endif
