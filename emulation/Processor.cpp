@@ -1,21 +1,21 @@
 #include "Processor.h"
 #include "NES.h"
 
-Processor::Processor(word initPC, word maxPC){
+#include <cassert>
+
+Processor::Processor(NES* parent, word initPC, word maxPC){
+    this->parent = parent;
+    assert(validParent());
+
     PC = initPC;
     this->maxPC = maxPC;
-    parent = nullptr;
-}
-
-void Processor::setParent(NES* parent) {
-	this->parent = parent;
 }
 
 byte Processor::getByte() {
 	return parent->getCartridge()->get(PC);
 }
 byte Processor::getByteNext(){
-	return parent->getCartridge()->get(PC);
+	return parent->getCartridge()->get(PC++);
 }
 
 word Processor::getWord() {
