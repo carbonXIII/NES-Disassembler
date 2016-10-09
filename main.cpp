@@ -10,10 +10,9 @@ int main(){
 	cout << "Input the path to the ROM file to disassemble: ";
 	cin >> path;
 
-	Disassembler disasm;
 	Cartridge cart(path);
-
-	NES nes = NES(&disasm, &cart);
+	NES nes(&cart);
+	Disassembler disasm(&nes);
 
 	disasm.run();
     

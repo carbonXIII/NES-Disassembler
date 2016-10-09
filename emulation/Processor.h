@@ -6,6 +6,8 @@
 class NES;
 
 class Processor{
+    bool validParent() const {return parent != nullptr;}
+
 protected:
     NES* parent;//the NES to execute within
     
@@ -18,12 +20,9 @@ protected:
     word getWord();
     word getWordNext();
 public:
-    Processor(word initPC, word maxPC);
+    Processor(NES* parent, word initPC, word maxPC);
     virtual ~Processor() {};
     
-    void setParent(NES* parent);
-    bool validParent() const {return parent != nullptr;};
-
     virtual void run() = 0;//update loop; might be run on a seperate thread (depending on implementation)
 };
 

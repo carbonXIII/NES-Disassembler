@@ -116,23 +116,11 @@ Cartridge* NES::getCartridge(){
 	return cart;
 }
 
-void NES::attachCartridge(Cartridge* newCart){
+void NES::insertCartridge(Cartridge* newCart){
 	delete cart;
 	cart = newCart;
 }
 
-Processor* NES::getProcessor(){
-	return proc;
-}
-
-void NES::attachProcessor(Processor* newProc){
-	delete proc;
-	proc = newProc;
-	if(validProcessor())proc->setParent(this);
-}
-
-NES::NES(Processor* proc, Cartridge* cart){
-	this->proc = proc;
-	if(validProcessor())proc->setParent(this);
+NES::NES(Cartridge* cart){
 	this->cart = cart;
 }

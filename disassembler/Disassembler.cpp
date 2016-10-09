@@ -3,13 +3,14 @@
 
 using namespace std;
 
-Disassembler::Disassembler() : Processor(parent->getCartridge()->getMinAddress(),parent->getCartridge()->getMaxAddress()){}
-
-Disassembler::Disassembler(word maxPC) : Processor(parent->getCartridge()->getMinAddress(), maxPC) {}
-
-Disassembler::~Disassembler(){
-	//[TODO] graceful shutdown and cleanup of data
+Disassembler::Disassembler(NES* parent) : Processor(parent, parent->getCartridge()->getMinAddress(), parent->getCartridge()->getMaxAddress()) {
+	fillInstructionTable();
 }
+Disassembler::Disassembler(NES* parent, word initPC, word maxPC) : Processor(parent, initPC, maxPC) {
+	fillInstructionTable();
+}
+
+Disassembler::~Disassembler(){/*[TODO] graceful shutdown and cleanup of data*/}
 
 void Disassembler::fillInstructionTable(){
 	ifstream fin;
@@ -110,8 +111,8 @@ string Disassembler::processOP(){
 }
 
 void Disassembler::run(){
-    while(PC < maxPC){
-		cout << processOP() << endl;
+	while(PC < maxPC){
+		cout << PC << ": " << processOP() << endl;
 	}
 	
 	cout << "End of segment" << endl;
