@@ -6,6 +6,7 @@
  */
 #include "NES.h"
 #include <stdexcept>
+#include <sstream>
 
 using namespace std;
 
@@ -27,6 +28,22 @@ inline bool Header::isTrainer() const{
 
 inline bool Header::isPCROM() const{
 	return f7.b1();
+}
+
+string Header::toString() const{
+	stringstream ss;
+	
+	ss << "Program ROM Size: " << getPrgROMSize() << endl;
+	ss << "Character ROM Size: " << getChrROMSize() << endl;
+	ss << "Program RAM Size: " << getPrgRAMSize() << endl;
+	ss << "Trainer is ";
+		if(!isTrainer()) ss << "not ";
+	ss << "present." << endl;
+	ss << "Player's Choice ROM is ";
+		if(!isPCROM()) ss << "not ";
+	ss << "present." << endl;
+	
+	return ss.str();
 }
 
 void Cartridge::fill(){//fill the Cartridge info based on Header info

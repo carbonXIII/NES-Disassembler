@@ -1,10 +1,9 @@
 SOURCE_DIR:= emulation disassembler .
 INCLUDES:= $(addsuffix /*.h,SOURCE_DIR) $(addsuffix /*.hpp,SOURCE_DIR)
 OBJ_DIR:= obj
-#SOURCES:= $(SOURCE_DIR: %=$(shell find -name '$(addsuffix %,*.cpp)'))
-SOURCES:= $(SOURCE_DIR: %=hella%)
-OBJECTS:= $(SOURCES:./%.cpp=$(addprefix $(OBJ_DIR)/,%.o))
-EXECUTABLE:= disasm
+SOURCES:= $(shell find $(SOURCE_DIR) -maxdepth 1 -name "*.cpp")
+OBJECTS:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
+EXEC_DIR:= bin/linux_x86
 CXXFLAGS:= -std=c++11
 
 includes:
@@ -14,7 +13,7 @@ $(OBJ_DIR)/%.o: %.cpp
 	g++ -c $(CXXFLAGS) $< -o $@
 	    
 disasm: $(OBJECTS)
-	g++ $(OBJECTS) -o $(EXECUTABLE)
+	g++ $(OBJECTS) -o $(EXEC_DIR)/disasm
 	
 compressor/main: compressor/main.cpp
 	g++ $(CXXFLAGS) compressor/main.cpp -o compressor/main

@@ -27,6 +27,8 @@ struct Header{
     inline long getPrgRAMSize() const;
     inline bool isTrainer() const;
     inline bool isPCROM() const;
+    
+    std::string toString() const;
 } __attribute__ ((packed));
 
 class Cartridge : public Addressable<word, byte>{//NES has 16bit addressing
@@ -55,6 +57,8 @@ public:
 
     byte& get(word addr, int mode=CPU);
     void useTrainer(bool b);
+    
+    Header* getHeader() {return head;}
 
     RAM* ram;
 };

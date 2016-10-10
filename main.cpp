@@ -11,6 +11,8 @@ int main(){
 	cin >> path;
 
 	Cartridge cart(path);
+	cout << cart.getHeader()->toString();
+	
 	NES nes(&cart);
 	Disassembler disasm(&nes);
 
