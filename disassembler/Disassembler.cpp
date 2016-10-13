@@ -26,6 +26,7 @@ void Disassembler::fillInstructionTable(){
 	}
 	
 	fin.read((char*)&instrSet, size);
+	fill(((char*)instrSet.instructions) + (size - 256), ((char*)instrSet.instructions) + 1024, 0);
 }
 
 string Disassembler::processOperands(char addressMode){
@@ -45,7 +46,7 @@ string Disassembler::processOperands(char addressMode){
 			break;
 		case abso:
 			rtn += " $";
-			addHex(getWordNext(),rtn);
+			addHex(getWordNext(),rtn,0);
 			break;
 		case indi:
 			rtn += " ($";
@@ -54,12 +55,12 @@ string Disassembler::processOperands(char addressMode){
 			break;
 		case aIndX:
 			rtn += " $";
-			addHex(getWordNext(),rtn);
+			addHex(getWordNext(),rtn,0);
 			rtn += ",X";
 			break;
 		case aIndY:
 			rtn += " $";
-			addHex(getWordNext(),rtn);
+			addHex(getWordNext(),rtn,0);
 			rtn += ",Y";
 			break;
 		case zIndX:
@@ -111,9 +112,12 @@ string Disassembler::processOP(){
 }
 
 void Disassembler::run(){
-	while(PC < maxPC){
-		cout << PC << ": " << processOP() << endl;
+	do{
+		word initPC = PC;
+		string asmString = processOP();
+		if(asmString.size() != 0)cout << std::hex << initPC << std::dec << ": " << asmString << endl;
 	}
+	while(PC != 0);
 	
 	cout << "End of segment" << endl;
 }

@@ -16,7 +16,7 @@ class Disassembler : public Processor{
     struct InstructionSet{
         byte lookup[256];
         Instruction instructions[256];
-    }__attribute__ ((packed)) instrSet;
+    } instrSet;
     
     void fillInstructionTable();
     std::string processOperands(char addressMode);//read the next few bytes and increment the PC to the end of the operands (the beginning of the following OP)

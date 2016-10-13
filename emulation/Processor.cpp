@@ -2,6 +2,9 @@
 #include "NES.h"
 
 #include <cassert>
+#include <iostream>
+
+using namespace std;
 
 Processor::Processor(NES* parent, word initPC, word maxPC){
     this->parent = parent;
@@ -12,6 +15,7 @@ Processor::Processor(NES* parent, word initPC, word maxPC){
 }
 
 byte Processor::getByte() {
+	cout << "\t" << PC << endl;
 	return parent->getCartridge()->get(PC);
 }
 byte Processor::getByteNext(){
@@ -22,5 +26,7 @@ word Processor::getWord() {
 	return ((word)parent->getCartridge()->get(PC) << 8) & parent->getCartridge()->get(PC+1);
 }
 word Processor::getWordNext() {
-	return ((word)parent->getCartridge()->get(PC++) << 8) & parent->getCartridge()->get(PC++);
+	word rtn = ((word)parent->getCartridge()->get(PC) << 8) & parent->getCartridge()->get(PC+1);
+	PC += 2;
+	return rtn;
 }

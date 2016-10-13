@@ -12,16 +12,17 @@ includes:
 $(OBJ_DIR)/%.o: %.cpp
 	g++ -c $(CXXFLAGS) $< -o $@
 	    
-disasm: $(OBJECTS)
-	g++ $(OBJECTS) -o $(EXEC_DIR)/disasm
+disasm: $(OBJECTS) disassembler/ops.bin disassembler/ops.bin
+	g++ $(OBJECTS) -o $(EXEC_DIR)/disasm && \
+	cp disassembler/ops.bin $(EXEC_DIR)/ops.bin
 	
-compressor/main: compressor/main.cpp
+compressor: compressor/main.cpp
 	g++ $(CXXFLAGS) compressor/main.cpp -o compressor/main
 
 .PHONY: clean
 clean:
 	rm -f $(OBJECTS)
-	rm -f $(EXECUTABLE)
+	rm -f $(EXEC_DIR)/disasm
 
 all: disasm
 	

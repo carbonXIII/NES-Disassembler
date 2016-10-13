@@ -12,7 +12,7 @@
 struct RAM;//predefine RAM
 
 struct Header{
-    byte sig[3];
+    byte sig[4];
     byte prgROMSize;//program ROM size in 16KB units
     byte chrROMSize;//character ROM size in 8KB units
     FlagByte f6;
@@ -22,9 +22,9 @@ struct Header{
     FlagByte f10;//unused
     //followed by 5 bytes of 0s
 
-    inline long getPrgROMSize() const;
-    inline long getChrROMSize() const;
-    inline long getPrgRAMSize() const;
+    inline unsigned long long getPrgROMSize() const;
+    inline unsigned long long getChrROMSize() const;
+    inline unsigned long long getPrgRAMSize() const;
     inline bool isTrainer() const;
     inline bool isPCROM() const;
     

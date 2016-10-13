@@ -10,15 +10,15 @@
 
 using namespace std;
 
-inline long Header::getPrgROMSize() const{
+inline unsigned long long Header::getPrgROMSize() const{
 	return prgROMSize << 14;
 }
 
-inline long Header::getChrROMSize() const{
-	return prgROMSize << 13;
+inline unsigned long long Header::getChrROMSize() const{
+	return chrROMSize << 13;
 }
 
-inline long Header::getPrgRAMSize() const{
+inline unsigned long long Header::getPrgRAMSize() const{
 	return prgRAMSize << 13;
 }
 

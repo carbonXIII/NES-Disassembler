@@ -42,14 +42,14 @@ byte buffer[1024];//the used 4 byte sections will be written to the file
 int bI = 0;
 
 void printUsage(){
-    cout << "USAGE: compressor [-f output] [csvpath]" << endl;
+    cout << "USAGE: compressor [-o output] [csvpath]" << endl;
     cout << "\t-o     : Specify the file path of the compressed output file" << endl;
     cout << "\tcsvpath: The file path of the input csv file" << endl;
 }
 
 void dumpTable(ostream& out){//dump the lookup table followed by the used portion of the buffer to a stream
     out.write((char*)lookup,256);
-    out.write((char*)buffer,bI);
+    out.write((char*)buffer,bI*4);
 }
 
 void printAddressOptions(){
@@ -95,8 +95,7 @@ int hexToInt(char* a){
 }
 
 bool processLine(string* line){
-	fill(lookup,lookup+256,0xFF);
-    cout << "Processing line \'" << (*line) << "\'" << endl;
+	cout << "Processing line \'" << (*line) << "\'" << endl;
     
     char* str = new char[line->size()];
     strcpy(str, line->data());
@@ -108,7 +107,7 @@ bool processLine(string* line){
     char* name = strtok(0,",");
     for(int i = 0; i < 3; i++){
         if(name[i] == ' ' || name[i] == '\0')errCSV();
-        buffer[bI+i] = name[i];
+        buffer[bI*4+i] = name[i];
     }
     
     char* addr = strtok(0,",");
@@ -126,16 +125,17 @@ bool processLine(string* line){
         cout << "Unknown addressing mode for op code \'" << code << "\'. Input the correct addressing mode # from list:" << endl;
         printAddressOptions();
         int mode; cin >> mode;
-        buffer[bI+3] = mode;
+        buffer[bI*4+3] = mode;
     }else{
-        buffer[bI+3] = addressNames.at(string(addr));
+        buffer[bI*4+3] = addressNames.at(string(addr));
     }
        
-    bI += 4;//increment to next available slot
+    bI++;//increment to next available slot
 }
 
 int main(int argc, char** argv){
-    if(argc >= 1){//there are arguments
+    fill(lookup,lookup+256,0xFF);
+	if(argc >= 1){//there are arguments
         if(processArgs(argc, argv))
             exit(1);
     }
