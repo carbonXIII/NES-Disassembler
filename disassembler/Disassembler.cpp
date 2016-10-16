@@ -115,7 +115,10 @@ void Disassembler::run(){
 	do{
 		word initPC = PC;
 		string asmString = processOP();
-		if(asmString.size() != 0)cout << std::hex << initPC << std::dec << ": " << asmString << endl;
+		if(asmString.size() != 0){
+			if(lineNumbers)cout << std::hex << initPC << std::dec << ": ";
+			cout << asmString << endl;
+		}
 	}
 	while(PC != 0);
 	
