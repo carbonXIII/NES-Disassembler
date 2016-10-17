@@ -42,7 +42,7 @@ inline void addHex(byte c, std::string& s){
 inline void addHex(word c, std::string& s, int){
     s += HEX[c >> 12];
     s += HEX[(c >> 8) & NIBBLE_MASK];
-    s += HEX[(c & BYTE_MASK) >> 4];
+    s += HEX[(c >> 4) & NIBBLE_MASK];
     s += HEX[c & NIBBLE_MASK];
 }
 

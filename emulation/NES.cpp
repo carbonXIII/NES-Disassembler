@@ -123,10 +123,10 @@ Cartridge::Cartridge(Header* header, string path){//create a cartridge from a gi
 }
 
 Cartridge::~Cartridge(){
-	delete [] trainer;
-	delete [] prgROM;
-	delete [] chrROM;
-	delete [] pcROM;
+	if(trainer != nullptr)delete [] trainer;
+	if(prgROM != nullptr)delete [] prgROM;
+	if(chrROM != nullptr)delete [] chrROM;
+	if(pcROM != nullptr)delete [] pcROM;
 }
 
 Cartridge* NES::getCartridge(){

@@ -9,8 +9,6 @@
 //include all headers not needed for disassembly
 #endif
 
-struct RAM;//predefine RAM
-
 struct Header{
     byte sig[4];
     byte prgROMSize;//program ROM size in 16KB units
@@ -59,8 +57,6 @@ public:
     void useTrainer(bool b);
     
     Header* getHeader() {return head;}
-
-    RAM* ram;
 };
 
 //the representation of the hardware of the NES (cartridge, processor, etc)

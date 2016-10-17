@@ -23,10 +23,10 @@ byte Processor::getByteNext(){
 }
 
 word Processor::getWord() {
-	return ((word)parent->getCartridge()->get(PC) << 8) & parent->getCartridge()->get(PC+1);
+	return (word)parent->getCartridge()->get(PC) | ((word)parent->getCartridge()->get(PC+1) << 8);
 }
 word Processor::getWordNext() {
-	word rtn = ((word)parent->getCartridge()->get(PC) << 8) & parent->getCartridge()->get(PC+1);
+	word rtn = (word)parent->getCartridge()->get(PC) | ((word)parent->getCartridge()->get(PC+1) << 8);
 	PC += 2;
 	return rtn;
 }

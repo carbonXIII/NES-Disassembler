@@ -21,7 +21,7 @@ void Disassembler::fillInstructionTable(){
 		size = fin.tellg();
 		fin.seekg(0, ios::beg);
 	}catch(int& e){
-		cout << "Instruction set file not loaded! Ensure " << OP_FILE << " exists!" << endl;
+		*out << "Instruction set file not loaded! Ensure " << OP_FILE << " exists!" << endl;
 		exit(1);
 	}
 	
@@ -116,11 +116,11 @@ void Disassembler::run(){
 		word initPC = PC;
 		string asmString = processOP();
 		if(asmString.size() != 0){
-			if(lineNumbers)cout << std::hex << initPC << std::dec << ": ";
-			cout << asmString << endl;
+			if(lineNumbers)*out << std::hex << initPC << std::dec << ": ";
+			*out << asmString << endl;
 		}
 	}
 	while(PC != 0);
 	
-	cout << "End of segment" << endl;
+	*out << "End of segment" << endl;
 }

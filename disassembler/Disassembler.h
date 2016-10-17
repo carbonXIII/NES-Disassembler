@@ -2,6 +2,7 @@
 #define EMULATION_DISASSEMBLER_H_
 
 #include "../emulation/NES.h"
+#include <iostream>
 
 enum : char {accu, imme, impl, rela, abso, zero, indi, aIndX, aIndY, zIndX, zIndY, indXI, indYI, iIndX, iIndY};
 
@@ -23,11 +24,13 @@ class Disassembler : public Processor{
     std::string processOP();//processes the next OP and increments the PC to the beginning of the following OP
 	
 	bool lineNumbers = false;
+	std::ostream* out = &std::cout;
 public:
     Disassembler(NES* parent);
     Disassembler(NES* parent, word initPC, word maxPC);
 	
-	void showLineNumbers(bool show = true) {lineNumbers = true;};
+	void showLineNumbers(bool show = true) {lineNumbers = show;}
+	void setOutputStream(std::ostream* out) {this->out = out;}
 
     ~Disassembler();
     

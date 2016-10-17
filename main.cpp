@@ -2,11 +2,15 @@
 
 #include "disassembler/Disassembler.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
-string path;
+string path = "";
 bool showLineNumbers = false;
+
+ofstream file;
+bool toFile = false;
 
 void printUsage(){//print a usage statement
 	cout << "disasm [ROMFile] [-l]" << endl;
@@ -19,6 +23,10 @@ bool processArgs(int argc, char** argv){//returns 1 on error
 		if(argv[i][0] == '-'){
 			if(argv[i][1] == 'l'){
 				showLineNumbers = true;
+			}else if(argv[i][1] == 'o'){
+				i++;
+				file.open(argv[i]);
+				toFile = true;
 			}else{
 				printUsage();
 				return true;
@@ -28,7 +36,7 @@ bool processArgs(int argc, char** argv){//returns 1 on error
 		}
 	}
 	
-	if(path == 0){
+	if(path == ""){
 		cout << "Input the path to the ROM file to disassemble: ";
 		cin >> path;
 	}
@@ -40,13 +48,18 @@ int main(int argc, char** argv){
 	if(processArgs(argc, argv))return 0;
 	
 	Cartridge cart(path);
-	cout << cart.getHeader()->toString();
+	if(!toFile)cout << cart.getHeader()->toString() << endl;
+	else file << cart.getHeader()->toString() << endl;
 	
 	NES nes(&cart);
 	Disassembler disasm(&nes);
+
 	disasm.showLineNumbers(showLineNumbers);
+	if(toFile)disasm.setOutputStream(&file);
 
 	disasm.run();
-    
+
+	if(toFile)file.close();
+
     return 0;
 }

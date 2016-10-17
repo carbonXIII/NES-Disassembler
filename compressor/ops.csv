@@ -70,7 +70,7 @@ E8,INX,
 C8,INY,
 6C,JMP,Indirect
 4C,JMP,Absolute
-20,JSR,
+20,JSR,Absolute
 A9,LDA,Immediate
 A5,LDA,Zero Page
 B5,LDA,"Zero Page, X"
