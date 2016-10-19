@@ -16,15 +16,17 @@ disasm: $(OBJECTS) disassembler/ops.bin disassembler/ops.bin
 	g++ $(OBJECTS) -o $(EXEC_DIR)/disasm && \
 	cp disassembler/ops.bin $(EXEC_DIR)/ops.bin
 	
-compressor: compressor/main.cpp
-	g++ $(CXXFLAGS) compressor/main.cpp -o compressor/main
+compressor: compressor/main.cpp compressor/ops.csv
+	g++ $(CXXFLAGS) compressor/main.cpp -o compressor/main && \
+	compressor/./main compressor/ops.csv -o compressor/ops.bin && \
+	cp compressor/ops.bin disassembler/ops.bin
 
 .PHONY: clean
 clean:
 	rm -f $(OBJECTS)
 	rm -f $(EXEC_DIR)/disasm
 
-all: disasm
+all: compressor disasm
 	
 
    

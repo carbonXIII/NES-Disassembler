@@ -94,6 +94,12 @@ int hexToInt(char* a){
     return rtn;
 }
 
+int decToInt(char a){
+	if(a >= '0' && a <= '9'){
+		return a  - '0';
+	}errCSV();
+}
+
 bool processLine(string* line){
 	cout << "Processing line \'" << (*line) << "\'" << endl;
     
@@ -129,6 +135,9 @@ bool processLine(string* line){
     }else{
         buffer[bI*4+3] = addressNames.at(string(addr));
     }
+	
+	char* branches = strtok(0,",");
+	buffer[bI*4+3] |= decToInt(branches[0]) << 4;
        
     bI++;//increment to next available slot
 }

@@ -31,7 +31,7 @@ void Disassembler::fillInstructionTable(){
 
 string Disassembler::processOperands(char addressMode){
 	string rtn = "";
-	switch(addressMode){
+	switch(addressMode & NIBBLE_MASK){
 		case accu:
 			rtn += " A";
 			break;
