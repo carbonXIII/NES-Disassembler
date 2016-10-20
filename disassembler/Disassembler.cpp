@@ -4,15 +4,19 @@
 using namespace std;
 
 Disassembler::Disassembler(NES* parent) : Processor(parent, parent->getCartridge()->getMinAddress(), parent->getCartridge()->getMaxAddress()) {
-	fillInstructionTable();
+	fillOPTable();
 }
 Disassembler::Disassembler(NES* parent, word initPC, word maxPC) : Processor(parent, initPC, maxPC) {
-	fillInstructionTable();
+	fillOPTable();
 }
 
 Disassembler::~Disassembler(){/*[TODO] graceful shutdown and cleanup of data*/}
 
-void Disassembler::fillInstructionTable(){
+Operation* Disassembler::OPTable::getOP(byte opCode){
+	return opTable.operations[opTable.lookup[opCode]];
+}
+
+void Disassembler::fillOPTable(){
 	ifstream fin;
 	int size = 0;
 
@@ -21,15 +25,37 @@ void Disassembler::fillInstructionTable(){
 		size = fin.tellg();
 		fin.seekg(0, ios::beg);
 	}catch(int& e){
-		*out << "Instruction set file not loaded! Ensure " << OP_FILE << " exists!" << endl;
+		*out << "Operation table file not loaded! Ensure " << OP_FILE << " exists!" << endl;
 		exit(1);
 	}
 	
-	fin.read((char*)&instrSet, size);
-	fill(((char*)instrSet.instructions) + (size - 256), ((char*)instrSet.instructions) + 1024, 0);
+	fin.read((char*)&opTable, size);
+	fill(((char*)opTable.operations) + (size - 256), ((char*)opTable.operations) + 1024, 0);
 }
 
-string Disassembler::processOperands(char addressMode){
+word Disassembler::getOperands(char addressMode){
+	switch (addressMode & NIBBLE_MASK){
+		case imme:
+		case rela:
+		case zero:
+		case indi:
+		case zIndX:
+		case zIndY:
+		case iIndX:
+		case iIndY:
+		case indXI:
+		case indYI:
+			return getByteNext();
+		case abso:
+		case aIndX:
+		case aIndY:
+			return getWordNext();
+		default:
+			return 0;
+	}
+}
+
+string Operation::operandToString(word operand) const{
 	string rtn = "";
 	switch(addressMode & NIBBLE_MASK){
 		case accu:
@@ -37,90 +63,82 @@ string Disassembler::processOperands(char addressMode){
 			break;
 		case imme:
 			rtn += " #$";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			break;
 		case rela:
 		case zero:
 			rtn += " $";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			break;
 		case abso:
 			rtn += " $";
-			addHex(getWordNext(),rtn,0);
+			addHex(operand,rtn,0);
 			break;
 		case indi:
 			rtn += " ($";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += ")";
 			break;
 		case aIndX:
 			rtn += " $";
-			addHex(getWordNext(),rtn,0);
+			addHex(operand,rtn,0);
 			rtn += ",X";
 			break;
 		case aIndY:
 			rtn += " $";
-			addHex(getWordNext(),rtn,0);
+			addHex(operand,rtn,0);
 			rtn += ",Y";
 			break;
 		case zIndX:
 			rtn += " $";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",X";			
 			break;
 		case zIndY:
 			rtn += " $";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",Y";			
 			break;
 		case iIndX:
 			rtn += " ($";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += "),X";			
 			break;
 		case iIndY:
 			rtn += " ($";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += "),Y";				
 			break;
 		case indXI:
 			rtn += " ($";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",X)";				
 			break;
 		case indYI:
 			rtn += " ($";
-			addHex(getByteNext(),rtn);
+			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",Y)";			
 			break;
 	}return rtn;
 }
 
 string Disassembler::processOP(){
-	string rtn = "";
-	
-	byte op = getByteNext();
-	byte location = instrSet.lookup[op];
-	
-	Instruction* instr = &instrSet.instructions[location];
-	if(instr->getName()[0] == 0)return "";
-	
-	rtn += instr->getName();
-	rtn += processOperands(instr->addressMode);
+	byte opCode = getByteNext();
+	Operation* op = opTable.getOP(opCode);
+	word operands = getOperands(op->addressMode);
 
-	return rtn;
+	Instruction instr(PC, op, operands);
+
+	return instr.toString(lineNumbers);
 }
 
 void Disassembler::run(){
 	do{
-		word initPC = PC;
 		string asmString = processOP();
 		if(asmString.size() != 0){
-			if(lineNumbers)*out << std::hex << initPC << std::dec << ": ";
 			*out << asmString << endl;
 		}
-	}
-	while(PC != 0);
+	}while(PC != 0);
 	
 	*out << "End of segment" << endl;
 }

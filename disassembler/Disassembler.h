@@ -1,26 +1,31 @@
-#ifndef EMULATION_DISASSEMBLER_H_
-#define EMULATION_DISASSEMBLER_H_
+#ifndef DISASSEMBLER_DISASSEMBLER_H_
+#define DISASSEMBLER_DISASSEMBLER_H_
 
 #include "../emulation/NES.h"
+#include "Assembly.h"
 #include <iostream>
 
 enum : char {accu, imme, impl, rela, abso, zero, indi, aIndX, aIndY, zIndX, zIndY, indXI, indYI, iIndX, iIndY};
 
-struct Instruction{
+struct Operation{
 	char name[3];
 	char addressMode;
 
 	std::string getName() const {return std::string(name,3);}
+	std::string operandToString(word operand) const;
 }__attribute__ ((packed));
 
 class Disassembler : public Processor{
-	struct InstructionSet{
+	struct OPTable{
         byte lookup[256];
-        Instruction instructions[256];
-    } instrSet;
+        Operation operations[256];
+
+        Operation* getOP(byte opCode);
+    } opTable;
     
-    void fillInstructionTable();
-    std::string processOperands(char addressMode);//read the next few bytes and increment the PC to the end of the operands (the beginning of the following OP)
+    void fillOPTable();
+
+    word getOperands(char addressMode);
     std::string processOP();//processes the next OP and increments the PC to the beginning of the following OP
 	
 	bool lineNumbers = false;
