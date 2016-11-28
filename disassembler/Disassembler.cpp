@@ -65,60 +65,60 @@ string Operation::operandToString(word operand) const{
 			break;
 		case imme:
 			rtn += "#$";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			break;
 		case rela:
 		case zero:
 			rtn += "$";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			break;
 		case abso:
 			rtn += "$";
-			addHex(operand,rtn,0);
+			addHexWord(operand,rtn);
 			break;
 		case indi:
 			rtn += "($";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += ")";
 			break;
 		case aIndX:
 			rtn += "$";
-			addHex(operand,rtn,0);
+			addHexWord(operand,rtn);
 			rtn += ",X";
 			break;
 		case aIndY:
 			rtn += "$";
-			addHex(operand,rtn,0);
+			addHexWord(operand,rtn);
 			rtn += ",Y";
 			break;
 		case zIndX:
 			rtn += "$";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += ",X";			
 			break;
 		case zIndY:
 			rtn += "$";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += ",Y";			
 			break;
 		case iIndX:
 			rtn += "($";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += "),X";			
 			break;
 		case iIndY:
 			rtn += "($";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += "),Y";				
 			break;
 		case indXI:
 			rtn += "($";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += ",X)";				
 			break;
 		case indYI:
 			rtn += "($";
-			addHex(operand & BYTE_MASK,rtn);
+			addHexByte(operand & BYTE_MASK,rtn);
 			rtn += ",Y)";			
 			break;
 	}return rtn;

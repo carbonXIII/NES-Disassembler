@@ -63,7 +63,6 @@ public:
 class Assembly{
     std::vector<Instruction> lines;
     BlockPool blockPool;
-	VariablePool variablePool;
 
 public:
     std::vector<Instruction>::iterator begin() {return (std::vector<Instruction>::iterator)lines.begin();}//return the iterator for the first instruction

@@ -11,9 +11,9 @@ byte Instruction::numBranches() const{
 word Instruction::getBranchAddress() const{
 	switch(op->addressMode & NIBBLE_MASK){
 		case indi:
-			return op-addr + 1;//TODO find possible values of variable
+			return addr + 1;//TODO find possible values of variable
 		case rela:
-			return operand + op->addr;
+			return operand + addr;
 		default:
 			return operand;
 	}
@@ -24,7 +24,7 @@ string Instruction::toString(bool lnNumbering, bool branches) const{
 	
 	string rtn;
 	if(lnNumbering){
-		addHex(addr, rtn, 0);
+		addHexWord(addr, rtn);
 		rtn += ": ";
 	}
 	
@@ -33,7 +33,7 @@ string Instruction::toString(bool lnNumbering, bool branches) const{
 	
 	if(branches){
 		rtn += " (";
-		rtn += to_string(numBranches());
+		addHexNibble(numBranches(), rtn);
 		rtn += ")";
 	}
 	return rtn;
@@ -61,14 +61,12 @@ BlockPool::BlockPool(Assembly* parent){
 }
 
 void Block::spawnChildren(){
-	if(end->numBranches() == 1){
+	if(end->numBranches() == 1 || end->numBranches() == 14){
 		children[0] = pool->createBlock(this, end->operand);
-	}else if(end->NumBranches() == 2){
+	}else if(end->numBranches() == 2){
 		children = new Block*[2];
 		children[0] = pool->createBlock(this, end->addr + 1);
 		children[1] = pool->createBlock(this, end->operand);
-	}else if(end->numBranches() == ){
-		
 	}
 }
 

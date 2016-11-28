@@ -36,12 +36,16 @@ union FlagByte{
     Bit<7> b7;
 };
 
-inline void addHex(byte c, std::string& s){
+inline void addHexNibble(byte c, std::string& s){
+    s += HEX[c & NIBBLE_MASK];
+}
+
+inline void addHexByte(byte c, std::string& s){
     s += HEX[c >> 4];
     s += HEX[c & NIBBLE_MASK];
 }
 
-inline void addHex(word c, std::string& s, int){
+inline void addHexWord(word c, std::string& s){
     s += HEX[c >> 12];
     s += HEX[(c >> 8) & NIBBLE_MASK];
     s += HEX[(c >> 4) & NIBBLE_MASK];
