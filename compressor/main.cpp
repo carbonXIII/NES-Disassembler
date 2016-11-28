@@ -1,4 +1,4 @@
-//compresses a spreadsheet of 6502 op code information into a .bin file for use during disassembly/emulation (without sacrificing speed of lookup)
+//compresses a spreadsheet of 6502 op code information into a .bin file for use during disassembly/emulation (without sacrificing speed of lookup or memory)
 
 #include <iostream>
 #include <fstream>
@@ -6,6 +6,7 @@
 #include <map>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ const std::map<string, int> addressNames = {
     {string("Relative"),rela},
     {string("Absolute"),abso},
     {string("Zero Page"),zero},
-	{string("Indirect"),indi},
+	  {string("Indirect"),indi},
     {string("Absolute, X"),aIndX},
     {string("Absolute, Y"),aIndY},
     {string("Zero Page, X"),zIndX},
@@ -76,28 +77,24 @@ bool processArgs(int argc, char** argv){//returns true on failure
 }
 
 void errCSV(){
-    cout << "The csv file must be in the order: \"code (2 hex digits), name, address\"!" << endl;
+    cout << "The csv file must be in the order: \"code (2 hex digits), name, address, # of branches (1 hex digit)\"!" << endl;
     exit(1);
 }
 
-int hexToInt(char* a){
-    stringstream ss;
-
-    int rtn;
-    ss << std::hex << a;
-    ss >> rtn;
-
-    if(ss.fail()){
-    	errCSV();
-    }
-
-    return rtn;
-}
-
-int decToInt(char a){
-	if(a >= '0' && a <= '9'){
-		return a  - '0';
-	}errCSV();
+int hexToInt(char* a, int n=2){
+//n: digits to read
+	
+	int total = 0;
+    for(int i = 0; i < n; i++){
+		if(a[i] >= '0' && a[i] <= '9'){
+			total += (a[i] - '0') << ((n - i - 1)*4);
+		}else if(a[i] >= 'A' && a[i] <= 'F'){
+			total += (a[i] - 'A' + 10) << ((n - i - 1)*4);
+		}else{
+			errCSV();
+		}
+	}
+	return total;
 }
 
 bool processLine(string* line){
@@ -116,19 +113,24 @@ bool processLine(string* line){
         buffer[bI*4+i] = name[i];
     }
     
+	char* branches;
     char* addr = strtok(0,",");
-    if(addr == nullptr){//replace a nullptr from strtok with an empty string
-    	addr = new char[1];
+	if(addr == nullptr || (*(addr - 1) == ',' && *(addr - 2) == '\0')){
+		/*replace a skipped string from strtok with an empty string and set the value returned from strtok to the string reperesentation of the branches. using a hardcoded yet consistent hack to detect this*/
+    	branches = addr;
+		addr = new char[1];
     	addr[0] = '\0';
-    }if(addr[0] == '\"'){//remove quotes
-        if(addr[strlen(addr) - 1] != '\"')addr[strlen(addr)] = ',';
-        addr++;
-    }while(addr[strlen(addr) - 1] == ' ' || addr[strlen(addr) - 1] == '\r' || addr[strlen(addr) - 1] == '\"'){//remove spaces and line feeds
-        addr[strlen(addr) - 1] = '\0';
+    }else if(addr[0] == '\"'){//remove quotes
+        if(addr[strlen(addr) - 1] != '\"'){
+			addr[strlen(addr)] = ',';
+			strtok(0, ",");
+			addr[strlen(addr) - 1] = '\0';
+		}
+		addr++;
     }
 
     if(!addressNames.count(string(addr))){
-        cout << "Unknown addressing mode for op code \'" << code << "\'. Input the correct addressing mode # from list:" << endl;
+        cout << "Unknown addressing mode for op code \'" << (int)addr[0] << "\'. Input the correct addressing mode # from list:" << endl;
         printAddressOptions();
         int mode; cin >> mode;
         buffer[bI*4+3] = mode;
@@ -136,8 +138,8 @@ bool processLine(string* line){
         buffer[bI*4+3] = addressNames.at(string(addr));
     }
 	
-	char* branches = strtok(0,",");
-	buffer[bI*4+3] |= decToInt(branches[0]) << 4;
+	if(branches == nullptr) branches = strtok(0,",");
+	buffer[bI*4+3] |= hexToInt(branches,1) << 4;
        
     bI++;//increment to next available slot
 }
@@ -150,7 +152,7 @@ int main(int argc, char** argv){
     }
     
     if(csvPath == ""){
-        cout << "Input the path to the csv file (note: the csv file must be in the order: \"code (2 hex digits), name, address\"):" << endl;
+        cout << "Input the path to the csv file (note: the csv file must be in the order: \"code (2 hex digits), name, address, # of branches (1 dec digit)\"):" << endl;
         cin >> csvPath;
     }
     

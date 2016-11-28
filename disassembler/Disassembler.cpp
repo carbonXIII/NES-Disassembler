@@ -3,17 +3,19 @@
 
 using namespace std;
 
-Disassembler::Disassembler(NES* parent) : Processor(parent, parent->getCartridge()->getMinAddress(), parent->getCartridge()->getMaxAddress()) {
+Disassembler::Disassembler(NES* parent, Assembly* assembly) : Processor(parent, parent->getCartridge()->getMinAddress(), parent->getCartridge()->getMaxAddress()) {
+	this->assembly = assembly;
 	fillOPTable();
 }
-Disassembler::Disassembler(NES* parent, word initPC, word maxPC) : Processor(parent, initPC, maxPC) {
+Disassembler::Disassembler(NES* parent, Assembly* assembly, word initPC, word maxPC) : Processor(parent, initPC, maxPC) {
+	this->assembly = assembly;
 	fillOPTable();
 }
 
 Disassembler::~Disassembler(){/*[TODO] graceful shutdown and cleanup of data*/}
 
 Operation* Disassembler::OPTable::getOP(byte opCode){
-	return opTable.operations[opTable.lookup[opCode]];
+	return operations + lookup[opCode];
 }
 
 void Disassembler::fillOPTable(){
@@ -59,63 +61,63 @@ string Operation::operandToString(word operand) const{
 	string rtn = "";
 	switch(addressMode & NIBBLE_MASK){
 		case accu:
-			rtn += " A";
+			rtn += "A";
 			break;
 		case imme:
-			rtn += " #$";
+			rtn += "#$";
 			addHex(operand & BYTE_MASK,rtn);
 			break;
 		case rela:
 		case zero:
-			rtn += " $";
+			rtn += "$";
 			addHex(operand & BYTE_MASK,rtn);
 			break;
 		case abso:
-			rtn += " $";
+			rtn += "$";
 			addHex(operand,rtn,0);
 			break;
 		case indi:
-			rtn += " ($";
+			rtn += "($";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += ")";
 			break;
 		case aIndX:
-			rtn += " $";
+			rtn += "$";
 			addHex(operand,rtn,0);
 			rtn += ",X";
 			break;
 		case aIndY:
-			rtn += " $";
+			rtn += "$";
 			addHex(operand,rtn,0);
 			rtn += ",Y";
 			break;
 		case zIndX:
-			rtn += " $";
+			rtn += "$";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",X";			
 			break;
 		case zIndY:
-			rtn += " $";
+			rtn += "$";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",Y";			
 			break;
 		case iIndX:
-			rtn += " ($";
+			rtn += "($";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += "),X";			
 			break;
 		case iIndY:
-			rtn += " ($";
+			rtn += "($";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += "),Y";				
 			break;
 		case indXI:
-			rtn += " ($";
+			rtn += "($";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",X)";				
 			break;
 		case indYI:
-			rtn += " ($";
+			rtn += "($";
 			addHex(operand & BYTE_MASK,rtn);
 			rtn += ",Y)";			
 			break;
@@ -123,13 +125,15 @@ string Operation::operandToString(word operand) const{
 }
 
 string Disassembler::processOP(){
+	word initPC = PC;
+	
 	byte opCode = getByteNext();
 	Operation* op = opTable.getOP(opCode);
 	word operands = getOperands(op->addressMode);
 
-	Instruction instr(PC, op, operands);
-
-	return instr.toString(lineNumbers);
+	Instruction instr(initPC, op, operands);
+	assembly->addLine(instr);//add the line to the assembly
+	return instr.toString(lineNumbers, branches);
 }
 
 void Disassembler::run(){

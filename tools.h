@@ -12,6 +12,8 @@ extern const char* HEX;
 extern const byte NIBBLE_MASK;
 extern const byte BYTE_MASK;
 
+enum : char {accu, imme, impl, rela, abso, zero, indi, aIndX, aIndY, zIndX, zIndY, indXI, indYI, iIndX, iIndY};
+
 template <int bitno, typename T = byte>
 struct Bit{
     byte data;

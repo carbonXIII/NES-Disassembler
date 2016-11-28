@@ -5,8 +5,6 @@
 #include "Assembly.h"
 #include <iostream>
 
-enum : char {accu, imme, impl, rela, abso, zero, indi, aIndX, aIndY, zIndX, zIndY, indXI, indYI, iIndX, iIndY};
-
 struct Operation{
 	char name[3];
 	char addressMode;
@@ -16,12 +14,8 @@ struct Operation{
 }__attribute__ ((packed));
 
 class Disassembler : public Processor{
-	struct OPTable{
-        byte lookup[256];
-        Operation operations[256];
-
-        Operation* getOP(byte opCode);
-    } opTable;
+	
+	Assembly* assembly;
     
     void fillOPTable();
 
@@ -29,12 +23,21 @@ class Disassembler : public Processor{
     std::string processOP();//processes the next OP and increments the PC to the beginning of the following OP
 	
 	bool lineNumbers = false;
+	bool branches = false;
 	std::ostream* out = &std::cout;
 public:
-    Disassembler(NES* parent);
-    Disassembler(NES* parent, word initPC, word maxPC);
+	struct OPTable{
+        byte lookup[256];
+        Operation operations[256];
+
+        Operation* getOP(byte opCode);
+    } opTable;
+	
+    Disassembler(NES* parent, Assembly* assembly);
+    Disassembler(NES* parent, Assembly* assembly, word initPC, word maxPC);
 	
 	void showLineNumbers(bool show = true) {lineNumbers = show;}
+	void showBranches(bool show = true) {branches = show;}
 	void setOutputStream(std::ostream* out) {this->out = out;}
 
     ~Disassembler();

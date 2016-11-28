@@ -1,4 +1,5 @@
 #include "Assembly.h"
+#include "Disassembler.h"
 #include <exception>
 
 using namespace std;
@@ -8,19 +9,33 @@ byte Instruction::numBranches() const{
 }
 
 word Instruction::getBranchAddress() const{
-	return operand;
+	switch(op->addressMode & NIBBLE_MASK){
+		case indi:
+			return op-addr + 1;//TODO find possible values of variable
+		case rela:
+			return operand + op->addr;
+		default:
+			return operand;
+	}
 }
 
-string Instruction::toString(bool lnNumbering) const{
+string Instruction::toString(bool lnNumbering, bool branches) const{
+	if(op->getName()[0] == 0)return "";
+	
 	string rtn;
 	if(lnNumbering){
 		addHex(addr, rtn, 0);
 		rtn += ": ";
 	}
-
+	
 	rtn += op->getName() + " ";
 	rtn += op->operandToString(operand);
-
+	
+	if(branches){
+		rtn += " (";
+		rtn += to_string(numBranches());
+		rtn += ")";
+	}
 	return rtn;
 }
 
@@ -31,26 +46,34 @@ Instruction::Instruction(word addr, Operation* op, word operand){
 }
 
 Block* BlockPool::createBlock(Block* parent, word addr){
-	return pool.emplace_back(*this, parent, this->parent.find(addr));
+	pool.emplace_back(this, parent, this->parent->find(addr));
+	return (Block*)&*pool.end();
 }
 
 Block* BlockPool::createRoot(){
-	return pool.emplace_back(*this, this->parent.begin());
+	pool.emplace_back(this, this->parent->begin());
+	return (Block*)&*pool.end();
+}
+
+BlockPool::BlockPool(Assembly* parent){
+	pool.reserve(1);
+	this->parent = parent;
 }
 
 void Block::spawnChildren(){
 	if(end->numBranches() == 1){
-		children[0] = pool.createBlock(this, end->operand);
-	}else{
-		children = new Block[2];
-		children[0] = pool.createBlock(this, end->addr + 1);
-		children[1] = pool.createBlock(this, end->operand);
+		children[0] = pool->createBlock(this, end->operand);
+	}else if(end->NumBranches() == 2){
+		children = new Block*[2];
+		children[0] = pool->createBlock(this, end->addr + 1);
+		children[1] = pool->createBlock(this, end->operand);
+	}else if(end->numBranches() == ){
+		
 	}
 }
 
 bool Block::processLine(vector<Instruction>::iterator line){
-	end = line->numBranches();
-	if(line->numBranches() == 0){
+	if(line->numBranches() == 0 || line->numBranches() == 14){
 		return false;
 	}else{
 		spawnChildren();
@@ -58,13 +81,13 @@ bool Block::processLine(vector<Instruction>::iterator line){
 	}
 }
 
-Block::Block(BlockPool& pool, Block* parent, vector<Instruction>::iterator begin){
+Block::Block(BlockPool* pool, Block* parent, vector<Instruction>::iterator begin){
 	this->pool = pool;
 	this->parent = parent;
 	this->begin = begin;
 }
 
-Block::Block(BlockPool& pool, vector<Instruction>::iterator begin){
+Block::Block(BlockPool* pool, vector<Instruction>::iterator begin){
 	this->pool = pool;
 	this->begin = begin;
 }
@@ -74,9 +97,9 @@ byte Block::numChildren() const{
 }
 
 void Block::fill(){
-	for(auto i = begin; i++; i != pool.getAssembly().end()){
+	for(auto i = begin; i != pool->getAssembly()->end(); i++){
 		if(processLine(i))break;
-	}for(int i = 0; i < numChildren(); i++){
+	}if(numChildren() != 14)for(int i = 0; i < numChildren(); i++){
 		children[i]->fill();
 	}
 }
@@ -103,3 +126,14 @@ vector<Instruction>::iterator Assembly::find(word address){
 
 	throw invalid_argument("Assembly does not contain valid instruction at the given address.");
 }
+
+void Assembly::developTree(){
+	blockPool.createRoot();
+	blockPool.pool[0].fill();
+}
+
+void Assembly::addLine(Instruction& instr){
+	lines.push_back(instr);
+}
+
+Assembly::Assembly() : blockPool(this) {}
